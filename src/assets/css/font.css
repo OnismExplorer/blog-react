@@ -1,0 +1,30 @@
+/* base 层自定义字体*/
+@layer base {
+
+    @font-face {
+        font-family: 'customFont';
+        src: url('../fonts/zh/dongZhuRegular.woff2') format('woff2');
+        unicode-range: U+4E00-9FFF, U+3400-4DBF;   /* CJK 常用汉字 */
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'customFont';
+        src: url('../fonts/zh/dongZhuBold.woff2') format('woff2');
+        unicode-range: U+4E00-9FFF, U+3400-4DBF;   /* CJK 常用汉字 */
+        font-weight: bold;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'customFont';
+        unicode-range: U+0000-00FF, U+2000-206F; /* 拉丁字母、标点等 */
+        src: url("../fonts/en/LXGWWenKaiTCRegular.woff2");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+}

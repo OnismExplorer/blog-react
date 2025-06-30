@@ -1,0 +1,142 @@
+@import "font.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*音乐播放器进度条样式*/
+@layer components {
+    input[type="range"].level {
+        @apply w-full appearance-none bg-sliderTrack shadow-music-player rounded-full mb-3;
+    }
+
+    input[type="range"].level::-webkit-slider-thumb {
+        @apply appearance-none bg-sliderThumb shadow-music-slider w-5 h-5 rounded-full;
+    }
+
+    input[type="range"].level::-moz-range-thumb {
+        @apply appearance-none bg-sliderThumb shadow-music-slider w-5 h-5 rounded-full;
+    }
+
+    /* CSS 部分：隐藏滚动条，但保留滚动能力 */
+    /* 针对 Firefox */
+    .table-no-scrollbar .ant-table-body {
+        scrollbar-width: none;      /* Firefox */
+        -ms-overflow-style: none;   /* IE 10+ */
+    }
+
+    /* 针对 WebKit 内核浏览器（Chrome, Safari） */
+    .table-no-scrollbar .ant-table-body::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+
+    /* 确保仍然是可滚动的 */
+    .table-no-scrollbar .ant-table-body {
+        overflow-y: auto !important;
+    }
+}
+
+@layer base {
+    /*默认 Light 模式 */
+    :root {
+        --background: #ffffff;
+        --favoriteBg: #f7f9fe;
+        --fontColor: #000000;
+        --borderColor: rgba(0, 0, 0, 0.5);
+        --borderHoverColor: rgba(110, 110, 110, 0.4);
+        --articleFontColor: #1f1f1f;
+        --articleGreyFontColor: #616161;
+        --commentContent: #f7f9fe;
+        --themeBackground: #ffa500;
+        --toolbarFont: #333333;
+        --toolbarBackground: rgba(255, 255, 255, 1);
+        --greyFont: #797979;
+        --maxGreyFont: #595A5A;
+        --whiteMask: rgba(255, 255, 255, 0.3);
+        --maxWhiteMask: rgba(255, 255, 255, 0.5);
+        --maxMaxWhiteMask: rgba(255, 255, 255, 0.7);
+        --miniWhiteMask: rgba(255, 255, 255, 0.15);
+        --transparent: rgba(0, 0, 0, 0);
+        --miniMask: rgba(0, 0, 0, 0.15);
+        --mask: rgba(0, 0, 0, 0.3);
+        --translucent: rgba(0, 0, 0, 0.5);
+        --maxMask: rgba(0, 0, 0, 0.7);
+        --white: #ffffff;
+        --lightRed: #ff4b2b;
+        --maxLightRed: #ff416c;
+        --orangeRed: #ef794f;
+        --azure: #ecf7fe;
+        --lightGray: #dddddd;
+        --maxLightGray: #eeeeee;
+        --maxMaxLightGray: rgba(242, 242, 242, 0.5);
+        --lightGreen: #39c5bb;
+        --lightYellow: #f4e1c0;
+        --sliderTrack: #e1e6ec;
+        --sliderThumb: #a2b1c6;
+        --sideBarBackground:#EBF6F1;
+
+        /*阴影部分*/
+        --shadow-img: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-img-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        --shadow-article: 0 1px 20px -6px rgba(0, 0, 0, 0.5);
+        --shadow-article-hover: 0 5px 10px 5px rgba(110, 110, 110, 0.4);
+        --shadow-box: 0 0 5px #ffa500;
+        --shadow-avatar-hover: 0 0 16px 3px rgba(0, 0, 0, 0.15);
+        --shadow-box-mini: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-music-player: 5px 5px 11px #a2b1c6, -5px -5px 11px #fff;
+        --shadow-music-slider: 2px 2px 5px #a2b1c6, -2px -2px 5px #fff;
+        --shadow-music-active-button: inset 2px 2px 5px #a2b1c6, -2px -2px 5px #fff;
+        --shadow-card-image: 0 2px 10px rgba(147, 147, 147, 0.61);
+    }
+
+    /*暗黑 Dark 模式 */
+    html.dark {
+        --background: #1f1f1f;
+        --favoriteBg: #2c2f36;
+        --fontColor: #f2f2f2;
+        --borderColor: rgba(255, 255, 255, 0.2);
+        --borderHoverColor: rgba(255, 255, 255, 0.3);
+        --articleFontColor: #e0e0e0;
+        --articleGreyFontColor: #a1a1a1;
+        --commentContent: #2b2e34;
+        --themeBackground: #d18e00;
+        --toolbarFont: #eaeaea;
+        --toolbarBackground: rgba(31, 31, 31, 1);
+        --greyFont: #b0b0b0;
+        --maxGreyFont: #c5c5c5;
+        --whiteMask: rgba(0, 0, 0, 0.3);
+        --maxWhiteMask: rgba(0, 0, 0, 0.5);
+        --maxMaxWhiteMask: rgba(0, 0, 0, 0.7);
+        --miniWhiteMask: rgba(0, 0, 0, 0.15);
+        --transparent: rgba(0, 0, 0, 0);
+        --miniMask: rgba(255, 255, 255, 0.15);
+        --mask: rgba(255, 255, 255, 0.3);
+        --translucent: rgba(255, 255, 255, 0.5);
+        --maxMask: rgba(255, 255, 255, 0.7);
+        --lightRed: #ff7262;
+        --maxLightRed: #ff6b81;
+        --orangeRed: #e98a6c;
+        --azure: #1d1e20;
+        --lightGray: #3a3a3a;
+        --maxLightGray: #4a4a4a;
+        --maxMaxLightGray: rgba(60, 60, 60, 0.5);
+        --lightGreen: #44d2c4;
+        --lightYellow: #e7cfae;
+        --sliderTrack: #444c56;
+        --sliderThumb: #788393;
+        --sideBarBackground:#14090E;
+
+        /*阴影部分*/
+        --shadow-img: 0 10px 15px -3px rgba(255, 255, 255, 0.08), 0 4px 6px -2px rgba(255, 255, 255, 0.04);
+        --shadow-img-hover: 0 20px 25px -5px rgba(255, 255, 255, 0.12), 0 10px 10px -5px rgba(255, 255, 255, 0.08);
+        --shadow-article: 0 1px 20px -6px rgba(255, 255, 255, 0.3);
+        --shadow-article-hover: 0 5px 10px 5px rgba(255, 255, 255, 0.2);
+        --shadow-box: 0 0 5px #d18e00;
+        --shadow-avatar-hover: 0 0 16px 3px rgba(255, 255, 255, 0.15);
+        --shadow-box-mini: 1px 1px 3px rgba(255, 255, 255, 0.2);
+        --shadow-music-player: 5px 5px 11px #2c2c2c, -5px -5px 11px #1f1f1f;
+        --shadow-music-slider: 2px 2px 5px #2c2c2c, -2px -2px 5px #1f1f1f;
+        --shadow-music-active-button: inset 2px 2px 5px #2c2c2c, -2px -2px 5px #1f1f1f;
+        --shadow-card-image: 0 2px 10px rgba(255, 255, 255, 0.38);
+    }
+}
