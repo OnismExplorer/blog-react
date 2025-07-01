@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Tag} from "antd";
+import {useStore} from "@hooks/useStore";
 
 interface FooterProps {
     showFooter?: boolean; // 默认值为 true
@@ -10,6 +11,7 @@ const Footer: React.FC<FooterProps> = ({ showFooter = true ,footerText = "失之
     const [appRunTime, setAppRunTime] = useState("");
     // 获取当前年份
     const year = new Date().getFullYear();
+    const store = useStore();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -41,9 +43,9 @@ const Footer: React.FC<FooterProps> = ({ showFooter = true ,footerText = "失之
                 <div className="pt-2 pb-2 text-[18px] text-[#595A5A] justify-center items-center select-none">
                     <a className="text-[#595A5A] no-underline transition-all duration-300 hover:text-orange-500 pr-3"
                        href="https://beian.miit.gov.cn/" target="_blank"
-                       rel="noopener noreferrer">蜀ICP备2023020837号</a>
+                       rel="noopener noreferrer">ICP 备案号</a>
                     @<a href="https://onism.cn"
-                        className="text-[#595A5A] no-underline transition-all duration-300 hover:text-orange-500">{year} Onism</a>
+                        className="text-[#595A5A] no-underline transition-all duration-300 hover:text-orange-500">{year} {store.state.webInfo.webName}</a>
                 </div>
             </div>
         </div>
