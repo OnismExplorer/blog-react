@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useOutletContext} from "react-router-dom";
 import {Collapse, DatePicker, message, Modal} from "antd";
 import Footer from "@components/common/footer";
 import Comment from "@components/comment/comment";
@@ -11,17 +11,16 @@ import "highlight.js/styles/atom-one-dark.css";
 import {Markdown} from "@components/code/Markdown";
 import {useStore} from "@hooks/useStore";
 import {weiYan} from "@type/weiYan";
-import {getArticleById} from "@api/article";
-import {deleteWeiYan, saveNews, getNewList} from "@api/weiYan";
+import {deleteWeiYan, getNewList, saveNews} from "@api/weiYan";
 import {page} from "@type/page";
 import {getDownloadUrl} from "@api/resource";
 
 export default function Article() {
     // 获取文章 id
-    const id = new URLSearchParams(location.search).get("id");
     const navigate = useNavigate();
-    const [article, setArticle] = useState<article>();
-    const [markdownText, setMarkdownText] = useState('');
+    const article = useOutletContext<article>();
+    const id = article.id!;
+    const markdownText = article.articleContent;
     const [weiYanList, setWeiYanList] = useState<weiYan[]>([]);
     const [weiYanDialogVisible, setWeiYanDialogVisible] = useState(false);
     const [newsTime, setNewsTime] = useState("");
@@ -35,9 +34,9 @@ export default function Article() {
         lastScrollTime: 0
     });
 
+
     useEffect(() => {
-        // 获取文章
-        getArticle();
+        getNews();
         // 获取下载地址
         getDownloadUrl()
             .then((res) => {
@@ -422,24 +421,12 @@ export default function Article() {
         );
     };
 
-    // 获取文章数据
-    const getArticle = useCallback(() => {
-        getArticleById(id, false)
-            .then((res) => {
-                if (!common.isEmpty(res.data)) {
-                    setArticle(res.data);
-                    setMarkdownText(res.data.articleContent);
-                    getNews();
-                }
-            })
-    }, [common, id]);
-
     // 获取最新进展
     const getNews = useCallback(() => {
         const pagination: page & { source: string | null } = {
             pageNumber: 1,
             pageSize: 9999,
-            source: id
+            source: String(id)
         }
 
         getNewList(pagination)
@@ -494,7 +481,7 @@ export default function Article() {
             id: null,
             content,
             createTime: newsTime,
-            source: id,
+            source: String(id),
         }
         saveNews(param)
             .then(() => {
@@ -503,8 +490,6 @@ export default function Article() {
                 getNews();
             })
     }, [newsTime, id, getNews]);
-
-    if (!article) return null;
 
     return (
         <article className="bg-background mx-auto">
@@ -685,7 +670,7 @@ export default function Article() {
                         </div>
                         <span>·</span>
                         {/* 字数和阅读时间 */}
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-1 font-bold text-sm">
                             <span>
                                 {`文章 ${readingStats.wordCount} 字, 预计阅读 ${readingStats.readingTime} 分钟`}
                             </span>

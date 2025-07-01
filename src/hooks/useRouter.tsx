@@ -6,6 +6,7 @@ import NotFound from "@pages/error/NotFound";
 import request from "@utils/request";
 import Loading from "@components/common/loading";
 import {ApiError} from "@error/ApiError";
+import ArticleRouteGuard from "@components/article/ArticleRouteGuard";
 
 // 懒加载页面
 const Home = React.lazy(() => import('@pages/Home'));
@@ -97,7 +98,10 @@ export const AppRouter = () => {
                 <Route path="/" element={<Home/>}>
                     <Route index element={<DelayedRoute><Index/></DelayedRoute>}/>
                     <Route path="sort" element={<DelayedRoute><Sort/></DelayedRoute>}/>
-                    <Route path="article" element={<DelayedRoute><Article/></DelayedRoute>}/>
+                    {/*通过文章守卫路由防止文章加载异常*/}
+                    <Route path="article" element={<ArticleRouteGuard />}>
+                        <Route index element={<DelayedRoute><Article/></DelayedRoute>} />
+                    </Route>
                     <Route path="weiYan" element={<DelayedRoute><WeiYan/></DelayedRoute>}/>
                     {/*<Route path="love" element={<DelayedRoute><Love /></DelayedRoute>} />*/}
                     <Route path="favorite" element={<DelayedRoute><Favorite/></DelayedRoute>}/>
