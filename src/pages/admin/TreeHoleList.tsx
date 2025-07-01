@@ -137,9 +137,9 @@ const TreeHoleList: React.FC = () => {
                     rowKey="id"
                     columns={columns}
                     dataSource={treeHoles}
-                    bodyHeight={394}
+                    offsetHeight={170} // 距离底部预留 170px 给分页按钮
                     pagination={false}
-
+                    rowClassName="font-custom text-sm"
                 />
             </div>
 

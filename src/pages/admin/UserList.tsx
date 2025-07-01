@@ -375,7 +375,7 @@ const UserList: React.FC = () => {
                     dataSource={users}
                     rowKey="id"
                     pagination={false}
-                    bodyHeight={402}
+                    offsetHeight={170} // 距离底部预留 170px 给分页按钮
                     rowClassName="font-custom text-sm  select-text"
                 />
                 <ProPage

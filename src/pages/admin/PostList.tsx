@@ -261,7 +261,7 @@ const PostList: React.FC = () => {
         {
             title: '操作',
             key: 'action',
-            width: 140,
+            width: 150,
             align: 'center',
             render: (_, record) => (
                 <div
@@ -366,7 +366,7 @@ const PostList: React.FC = () => {
                 dataSource={articles}
                 rowKey="id"
                 pagination={false}
-                bodyHeight={382}
+                offsetHeight={200} // 距离底部预留 200px 给分页按钮
                 rowClassName="font-custom text-sm  select-text"
             />
             <ProPage

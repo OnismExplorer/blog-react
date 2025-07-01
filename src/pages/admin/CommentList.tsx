@@ -195,7 +195,7 @@ const CommentList: React.FC = () => {
                     columns={columns}
                     dataSource={comments}
                     pagination={false}
-                    bodyHeight={398}
+                    offsetHeight={200} // 距离底部预留 200px 给分页按钮
                     className="table-no-scrollbar"
                     rowClassName="font-custom text-sm"
                     onChange={(page) => handlePageChange(page.current ?? 1)}

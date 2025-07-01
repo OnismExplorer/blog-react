@@ -5,7 +5,7 @@ import React, {useEffect, useState} from "react";
 import {useAppContext} from "@hooks/useAppContext";
 import FileUpload from "@components/common/fileUpload";
 import {page} from "@type/page";
-import {changeResourceStatus, getResourceList, handleDeleteResource} from "../../api/resource";
+import {changeResourceStatus, getResourceList, handleDeleteResource} from "@api/resource";
 import ProPage from "@components/common/proPage";
 import ScrollTable from "@components/common/scrollTable";
 import {resource} from "@type/resource";
@@ -278,7 +278,7 @@ const ResourceList: React.FC = () => {
                     dataSource={resources}
                     rowKey="id"
                     pagination={false}
-                    bodyHeight={402}
+                    offsetHeight={170} // 距离底部预留 170px 给分页按钮
                     rowClassName="font-custom text-sm  select-text"
                 />
                 <ProPage

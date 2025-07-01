@@ -278,7 +278,7 @@ const SortList: React.FC = () => {
                 dataSource={sortInfo}
                 rowKey="id"
                 pagination={false}
-                bodyHeight={398}
+                offsetHeight={170} // 距离底部预留 170px 给分页按钮
                 rowClassName="font-custom text-sm"
                 expandable={{
                     showExpandColumn: false,
