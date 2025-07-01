@@ -193,7 +193,7 @@ const WeiYan: React.FC = () => {
                 open={weiYanDialogVisible}
                 onCancel={handleClose}
                 width={window.innerWidth < 768 ? "90%" : "40%"}
-                destroyOnClose
+                destroyOnHidden
                 centered
                 footer={null}
             >

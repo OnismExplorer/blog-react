@@ -223,7 +223,7 @@ const Comment: React.FC<Props> = ({ source, type, userId }) => {
             .catch((error) => {
                 message.error(error.message || "Failed to get comment count.").then();
             });
-    }, [source, type]);
+    }, [common, request, source, type]);
 
 
     const openReplyDialog = (commentToReply: comment, parentFloorComment: comment) => {
@@ -347,7 +347,7 @@ const Comment: React.FC<Props> = ({ source, type, userId }) => {
                 </div>
             )}
 
-            <Modal className="font-custom" title={<span className="text-base font-custom">回复</span>} style={{textAlign:'center'}} open={replyDialogVisible} onCancel={handleCloseDialog} footer={null} destroyOnClose>
+            <Modal className="font-custom" title={<span className="text-base font-custom">回复</span>} style={{textAlign:'center'}} open={replyDialogVisible} onCancel={handleCloseDialog} footer={null} destroyOnHidden>
                 <CommentBox disableGraffiti onSubmitComment={handleReplySubmit} />
             </Modal>
         </div>

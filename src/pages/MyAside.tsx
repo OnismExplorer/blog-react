@@ -13,7 +13,7 @@ import {webInfo} from "@type/webInfo";
 import {getArticleList} from "@api/article";
 import {handleGetMusic} from "@api/webInfo";
 import MusicCover from "@components/music/musicCover";
-import {music} from "../type/webInfo";
+import {music} from "@type/webInfo";
 
 interface Pagination extends page {
     recommendStatus: boolean;
@@ -335,7 +335,7 @@ const MyAside: React.FC<AsideProps> = ({
                 width="100%"
                 footer={null}
                 centered
-                destroyOnClose
+                destroyOnHidden
                 style={{textAlign: "center"}}
                 className="max-w-[95vw] sm:max-w-[500px]"
             >

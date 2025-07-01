@@ -120,7 +120,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 open={showPicture}
                 onCancel={() => setShowPicture(false)}
                 footer={null}
-                destroyOnClose
+                destroyOnHidden
                 centered
             >
                 <FileUpload prefix="commentPicture" onUpload={addPicture} maxSize={5} maxNumber={5}/>

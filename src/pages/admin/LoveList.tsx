@@ -346,7 +346,7 @@ const LoveList: React.FC = () => {
                 onCancel={handleClose}
                 onOk={handleSave}
                 centered
-                destroyOnClose
+                destroyOnHidden
                 width={400}
                 style={{
                     textAlign: 'center'
@@ -454,7 +454,7 @@ const LoveList: React.FC = () => {
                 style={{
                     textAlign: 'center'
                 }}
-                destroyOnClose
+                destroyOnHidden
                 centered
                 footer={null} // 去除按钮
             >

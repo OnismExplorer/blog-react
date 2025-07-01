@@ -437,7 +437,7 @@ const ResourcePathList: React.FC = () => {
                 open={showAddResourcePathDialog}
                 onCancel={clearDialog}
                 centered
-                destroyOnClose
+                destroyOnHidden
                 width={400}
                 style={{
                     textAlign: 'center'
@@ -537,7 +537,7 @@ const ResourcePathList: React.FC = () => {
                 style={{
                     textAlign: 'center'
                 }}
-                destroyOnClose
+                destroyOnHidden
                 centered
                 footer={null} // 去除按钮
             >
@@ -558,7 +558,7 @@ const ResourcePathList: React.FC = () => {
                 style={{
                     textAlign: 'center'
                 }}
-                destroyOnClose
+                destroyOnHidden
                 centered
                 footer={null} // 去除按钮
             >

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStore } from '@hooks/useStore';
 import { useAppContext } from '@hooks/useAppContext';
-import {weiYan} from "../../type/weiYan";
+import {weiYan} from "@type/weiYan";
 
 
 interface ProcessProps {

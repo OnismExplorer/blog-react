@@ -309,7 +309,7 @@ const SortList: React.FC = () => {
                 style={{justifyItems: 'center', alignItems: 'center', textAlign: 'center'}}
                 onOk={handleSaveSort}
                 onCancel={handleClose}
-                destroyOnClose
+                destroyOnHidden
                 okText="提交">
                 <Form form={sortForm}
                       style={{maxWidth: 300}} layout="horizontal">
@@ -349,7 +349,7 @@ const SortList: React.FC = () => {
                 centered
                 style={{justifyItems: 'center', alignItems: 'center', textAlign: 'center'}}
                 onCancel={handleClose}
-                destroyOnClose
+                destroyOnHidden
                 okText="提交" cancelText="取消">
                 <Form form={labelForm} style={{maxWidth: 250}} layout="horizontal">
                     <Form.Item name="labelName" label="标签名称"

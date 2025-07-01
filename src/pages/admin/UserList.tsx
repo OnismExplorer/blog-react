@@ -390,7 +390,7 @@ const UserList: React.FC = () => {
             <Modal
                 title="修改用户类型"
                 open={editVisiable}
-                destroyOnClose
+                destroyOnHidden
                 style={{textAlign: 'center'}}
                 onOk={async () => {
                     const values = await editForm.validateFields();
@@ -417,7 +417,7 @@ const UserList: React.FC = () => {
             <Modal
                 title={<span className="text-base font-custom font-normal">新增用户</span>}
                 open={addVisiable}
-                destroyOnClose
+                destroyOnHidden
                 style={{textAlign: 'center'}}
                 onOk={saveUser}
                 width={300}
@@ -472,7 +472,7 @@ const UserList: React.FC = () => {
             <Modal
                 title={<span className="text-base font-custom font-normal">更新信息</span>}
                 open={updateVisiable}
-                destroyOnClose
+                destroyOnHidden
                 style={{textAlign: 'center'}}
                 width={300}
                 centered

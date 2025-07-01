@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Collapse, DatePicker, message, Modal} from "antd";
 import Footer from "@components/common/footer";
 import Comment from "@components/comment/comment";
-import Process from "@components/common/Process";
+import Process from "@components/common/process";
 import CommentBox from "@components/comment/commentBox";
 import {useAppContext} from "@hooks/useAppContext";
 import {article} from "@type/article";
@@ -828,7 +828,7 @@ export default function Article() {
                 onCancel={() => setWeiYanDialogVisible(false)}
                 footer={null}
                 style={{textAlign: 'center'}}
-                destroyOnClose
+                destroyOnHidden
                 width={400}
                 centered
             >

@@ -296,7 +296,7 @@ const ResourceList: React.FC = () => {
                 style={{
                     textAlign:'center'
                 }}
-                destroyOnClose
+                destroyOnHidden
                 centered
                 footer={null} // 去除按钮
             >
