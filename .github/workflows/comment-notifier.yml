@@ -1,0 +1,49 @@
+name: "📬 Notify Author on New Comment (新回复时通知作者)"
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  notify-author:
+    # 仅当评论者不是机器人，也不是 Issue 创建者时才运行 (Only run if the commenter is not a bot and not the issue author)
+    if: github.event.sender.type != 'Bot' && github.event.comment.user.login != github.event.issue.user.login
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🔎 Extract author's email from issue body (从Issue内容中提取作者邮箱)"
+        id: get_email
+        # 这里的正则表达式需要与你的 issue 模板中“联系邮箱”的标题完全匹配
+        # The regex here needs to exactly match the title of "Contact Email" in your issue template
+        run: |
+          email=$(echo "${{ github.event.issue.body }}" | grep -oP '### 联系邮箱 \(Contact Email for Notifications\)\s*\n\s*\K[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
+          echo "email=$email" >> $GITHUB_OUTPUT
+
+      - name: "✉️ Send notification email to author (发送通知邮件给作者)"
+        # 仅当成功提取到邮箱时才执行此步骤 (Only run if an email was successfully extracted)
+        if: steps.get_email.outputs.email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+
+          subject: "【新回复/New Reply】你在项目中的 Issue 有了新回复 / Your issue in the project has a new reply"
+
+          to: ${{ steps.get_email.outputs.email }}
+
+          from: Blog React Notifier <${{ secrets.MAIL_USERNAME }}>
+
+          html_body: |
+            <p>你好 (Hello), <b>${{ github.event.issue.user.login }}</b>!</p>
+            <p>你在项目中提交的 Issue 收到了来自 <b>${{ github.event.comment.user.login }}</b> 的新回复。</p>
+            <p>Your issue submitted in the project has received a new reply from <b>${{ github.event.comment.user.login }}</b>.</p>
+            <hr>
+            <p><b>你的 Issue 标题 (Your Issue Title):</b></p>
+            <p>${{ github.event.issue.title }}</p>
+            <p><b>回复内容 (Reply Content):</b></p>
+            <pre>${{ github.event.comment.body }}</pre>
+            <hr>
+            <p>你可以点击下面的链接查看完整的讨论：</p>
+            <p>You can view the full discussion by clicking the link below:</p>
+            <p><a href="${{ github.event.comment.html_url }}">${{ github.event.comment.html_url }}</a></p>

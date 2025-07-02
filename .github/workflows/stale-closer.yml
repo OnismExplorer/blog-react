@@ -1,0 +1,43 @@
+name: "🧹 Close Stale Issues (关闭不活跃的Issue)"
+
+on:
+  schedule:
+    # 每天凌晨 2 点运行一次 (Run once daily at 2:00 AM)
+    - cron: "0 2 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: "Check and close stale issues (检查并关闭不活跃的Issue)"
+        uses: actions/stale@v9
+        with:
+          # 几天无活动后被标记为 stale (Days of inactivity before an issue is marked as stale)
+          days-before-stale: 60
+
+          # 被标记为 stale 后，几天无活动后被关闭 (Days of inactivity before a stale issue is closed)
+          # 设置为 -1 表示永不关闭，只标记 (Set to -1 to never close, only mark)
+          days-before-close: 14
+
+          # 标记 stale issue 时使用的标签 (The label to apply to stale issues)
+          stale-issue-label: "stale"
+
+          # 标记 stale issue 时发布的评论 (Comment to post when marking an issue as stale)
+          stale-issue-message: |
+            这个 Issue 由于长时间没有更新，已被标记为 **stale**。
+            如果它在 14 天内没有进一步的活动，将会被自动关闭。如果你认为这个 Issue 仍然有效，请发表评论或移除 stale 标签，否则请关闭它。谢谢！
+            ---
+            This issue has been marked as **stale** because it has been inactive for a long time.
+            It will be closed automatically in 7 days if there is no further activity. If you believe this issue is still valid, please comment or remove the stale label, otherwise please close it. Thank you!
+
+          # 关闭 stale issue 时发布的评论 (Comment to post when closing a stale issue)
+          close-issue-message: |
+            这个 Issue 由于被标记为 stale 后长时间没有活动，已被自动关闭。如果问题仍然存在，请创建一个新的 Issue。谢谢！
+            ---
+            This issue was closed automatically because it has been stale for a long time with no activity. If the problem persists, please create a new issue. Thank you.
+
+          # 拥有这些标签的 Issue 不会被标记为 stale (Issues with these labels will not be marked as stale)
+          exempt-issue-labels: "in-progress,help needed,planning,bug,enhancement"

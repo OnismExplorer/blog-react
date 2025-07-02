@@ -1,0 +1,32 @@
+name: "📧 New Issue Notification (新Issue通知)"
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  notify-owner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "✉️ Send notification email to owner (发送通知邮件给维护者)"
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+
+          subject: "【新Issue/New Issue】${{ github.event.issue.title }}"
+
+          to: ${{ secrets.MAIL_ADDRESS }} # 维护者邮箱
+
+          from: Blog React Notifier <${{ secrets.MAIL_USERNAME }}>
+
+          html_body: |
+            <h3>项目收到一个新的 Issue！/ A new issue has been created for the project!</h3>
+            <p><b>标题 (Title):</b> ${{ github.event.issue.title }}</p>
+            <p><b>提交者 (Author):</b> ${{ github.event.issue.user.login }}</p>
+            <p><b>直达链接 (Link):</b> <a href="${{ github.event.issue.html_url }}">${{ github.event.issue.html_url }}</a></p>
+            <hr>
+            <h4>内容详情 (Body):</h4>
+            <pre>${{ github.event.issue.body }}</pre>
