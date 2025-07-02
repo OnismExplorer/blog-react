@@ -101,7 +101,7 @@ const Welcome: React.FC = () => {
 
     // 快速操作
     const quickActions = [
-        {key: '/admin/postEdit', label: "写新文章", icon: "✍️", color: "bg-blue-50 text-blue-700 border-blue-200"},
+        {key: '/admin/articleEdit', label: "写新文章", icon: "✍️", color: "bg-blue-50 text-blue-700 border-blue-200"},
         {key: '/admin/main', label: "查看统计", icon: "📊", color: "bg-green-50 text-green-700 border-green-200"},
         {key: '/admin/userList', label: "管理用户", icon: "👥", color: "bg-purple-50 text-purple-700 border-purple-200"},
         {key: '/admin/treeHoleList', label: "查看留言", icon: "✉️", color: "bg-yellow-50 text-yellow-700 border-yellow-200"},
