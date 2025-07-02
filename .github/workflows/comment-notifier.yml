@@ -15,8 +15,15 @@ jobs:
         # 这里的正则表达式需要与你的 issue 模板中“联系邮箱”的标题完全匹配
         # The regex here needs to exactly match the title of "Contact Email" in your issue template
         run: |
-          email=$(echo "${{ github.event.issue.body }}" | grep -oP '### 联系邮箱 \(Contact Email for Notifications\)\s*\n\s*\K[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
+          email=$(echo "${{ github.event.issue.body }}" | grep -oP '### 联系邮箱 \(Contact Email for Notifications\)[[:space:]]*\K[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
           echo "email=$email" >> $GITHUB_OUTPUT
+
+      - name: "🔄 Convert comment markdown to HTML (将评论从 md 格式转换为 html 格式)"
+        if: steps.get_email.outputs.email
+        id: md_to_html
+        uses: c-hive/md-to-html@v1
+        with:
+          markdown: ${{ github.event.comment.body }}
 
       - name: "✉️ Send notification email to author (发送通知邮件给作者)"
         # 仅当成功提取到邮箱时才执行此步骤 (Only run if an email was successfully extracted)
@@ -28,22 +35,80 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
 
-          subject: "【新回复/New Reply】你在项目中的 Issue 有了新回复 / Your issue in the project has a new reply"
+          subject: "【新回复/New Reply】你在 ${{ github.repository }} 项目中的 Issue 有了新回复 / Your issue in the project has a new reply"
 
           to: ${{ steps.get_email.outputs.email }}
 
-          from: Blog React Notifier <${{ secrets.MAIL_USERNAME }}>
+          from: ${{ replace(github.repository, '/', ' - ') }} Notifier <${{ secrets.MAIL_USERNAME }}>
 
           html_body: |
-            <p>你好 (Hello), <b>${{ github.event.issue.user.login }}</b>!</p>
-            <p>你在项目中提交的 Issue 收到了来自 <b>${{ github.event.comment.user.login }}</b> 的新回复。</p>
-            <p>Your issue submitted in the project has received a new reply from <b>${{ github.event.comment.user.login }}</b>.</p>
-            <hr>
-            <p><b>你的 Issue 标题 (Your Issue Title):</b></p>
-            <p>${{ github.event.issue.title }}</p>
-            <p><b>回复内容 (Reply Content):</b></p>
-            <pre>${{ github.event.comment.body }}</pre>
-            <hr>
-            <p>你可以点击下面的链接查看完整的讨论：</p>
-            <p>You can view the full discussion by clicking the link below:</p>
-            <p><a href="${{ github.event.comment.html_url }}">${{ github.event.comment.html_url }}</a></p>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>New Reply Notification</title>
+            </head>
+            <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'; background-color: #f6f8fa;">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    <table width="600" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #ffffff;">
+                      <!-- Header -->
+                      <tr>
+                        <td align="center" style="padding: 24px; border-bottom: 1px solid #e1e4e8; background-color: #0366d6;">
+                          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">新回复通知 (New Reply)</h1>
+                        </td>
+                      </tr>
+                      <!-- Content -->
+                      <tr>
+                        <td style="padding: 24px;">
+                          <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.5;">你好 (Hello), <b>${{ github.event.issue.user.login }}</b>!</p>
+
+                          <p style="margin: 0 0 24px; font-size: 16px; line-height: 1.5;">
+                            你在 <b>${{ github.repository }}</b> 项目中提交的 Issue 收到了来自 <b>${{ github.event.comment.user.login }}</b> 的新回复。
+                            <br>
+                            Your issue in the <b>${{ github.repository }}</b> project has received a new reply from <b>${{ github.event.comment.user.login }}</b>.
+                          </p>
+            
+                          <!-- Issue Title -->
+                          <div style="padding: 16px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #f6f8fa; margin-bottom: 24px;">
+                            <p style="margin: 0; color: #586069; font-size: 14px;">你的 Issue 标题 (Your Issue Title):</p>
+                            <h3 style="margin: 4px 0 0; font-size: 18px; font-weight: 600;">${{ github.event.issue.title }}</h3>
+                          </div>
+            
+                          <!-- New Comment Body -->
+                          <div style="margin-bottom: 24px;">
+                            <p style="margin: 0 0 12px; color: #586069; font-size: 14px; font-weight: bold;">回复内容 (Reply Content):</p>
+                            <div style="padding: 16px; border-left: 4px solid #0366d6; background-color: #f6f8fa; font-size: 16px; line-height: 1.6;">
+                              ${{ steps.md_to_html.outputs.html }}
+                            </div>
+                          </div>
+            
+                          <!-- Call to Action Button -->
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td align="center">
+                                <a href="${{ github.event.comment.html_url }}"
+                                  style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; background-color: #2ea44f; border-radius: 6px;">
+                                  查看完整讨论 (View Full Discussion)
+                                </a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <!-- Footer -->
+                      <tr>
+                        <td align="center" style="padding: 16px; border-top: 1px solid #e1e4e8; color: #959da5; font-size: 12px;">
+                          这是一封来自 <b>${{ github.repository }}</b> 项目的自动通知邮件。
+                          <br>
+                          This is an automated notification from the <b>${{ github.repository }}</b> project.
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>

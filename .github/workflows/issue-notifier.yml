@@ -8,7 +8,15 @@ jobs:
   notify-owner:
     runs-on: ubuntu-latest
     steps:
-      - name: "✉️ Send notification email to owner (发送通知邮件给维护者)"
+      # 将 Issue 正文从 Markdown 转换为 HTML
+      # Convert the issue body from Markdown to HTML
+      - name: "🔄 Convert issue body markdown to HTML (将评论从 md 格式转换为 html 格式)"
+        id: md_to_html
+        uses: c-hive/md-to-html@v1
+        with:
+          markdown: ${{ github.event.issue.body }}
+
+      - name: "✉️ Send beautiful notification email to owner (发送邮件给维护者)"
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.MAIL_SERVER }}
@@ -16,17 +24,76 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
 
-          subject: "【新Issue/New Issue】${{ github.event.issue.title }}"
-
+          subject: "【${{ github.repository }}】收到新Issue / New Issue Received"
           to: ${{ secrets.MAIL_ADDRESS }} # 维护者邮箱
-
-          from: Blog React Notifier <${{ secrets.MAIL_USERNAME }}>
+          from: "${{ replace(github.repository, '/', ' - ') }} Notifier <${{ secrets.MAIL_USERNAME }}>"
 
           html_body: |
-            <h3>项目收到一个新的 Issue！/ A new issue has been created for the project!</h3>
-            <p><b>标题 (Title):</b> ${{ github.event.issue.title }}</p>
-            <p><b>提交者 (Author):</b> ${{ github.event.issue.user.login }}</p>
-            <p><b>直达链接 (Link):</b> <a href="${{ github.event.issue.html_url }}">${{ github.event.issue.html_url }}</a></p>
-            <hr>
-            <h4>内容详情 (Body):</h4>
-            <pre>${{ github.event.issue.body }}</pre>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>New Issue Notification</title>
+            </head>
+            <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'; background-color: #f6f8fa;">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    <table width="600" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #ffffff;">
+                      <!-- Header -->
+                      <tr>
+                        <td align="center" style="padding: 24px; border-bottom: 1px solid #e1e4e8; background-color: #d73a49;">
+                          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">新Issue通知 (New Issue)</h1>
+                        </td>
+                      </tr>
+                      <!-- Content -->
+                      <tr>
+                        <td style="padding: 24px;">
+                          <p style="margin: 0 0 24px; font-size: 16px; line-height: 1.5;">
+                            项目 <b>${{ github.repository }}</b> 收到了由用户 <b>${{ github.event.issue.user.login }}</b> 创建的一个新 Issue。
+                            <br>
+                            Project <b>${{ github.repository }}</b> has received a new issue from <b>${{ github.event.issue.user.login }}</b>.
+                          </p>
+
+                          <!-- Issue Title -->
+                          <div style="padding: 16px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #f6f8fa; margin-bottom: 24px;">
+                            <p style="margin: 0; color: #586069; font-size: 14px;">Issue 标题 (Issue Title):</p>
+                            <h3 style="margin: 4px 0 0; font-size: 18px; font-weight: 600;">${{ github.event.issue.title }}</h3>
+                          </div>
+
+                          <!-- Issue Body -->
+                          <div style="margin-bottom: 24px;">
+                            <p style="margin: 0 0 12px; color: #586069; font-size: 14px; font-weight: bold;">详细内容 (Full Details):</p>
+                            <div style="padding: 16px; border-left: 4px solid #d73a49; background-color: #f6f8fa; font-size: 14px; line-height: 1.6; color: #24292e;">
+                              ${{ steps.md_to_html.outputs.html }}
+                            </div>
+                          </div>
+
+                          <!-- Call to Action Button -->
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td align="center">
+                                <a href="${{ github.event.issue.html_url }}"
+                                  style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; background-color: #2ea44f; border-radius: 6px;">
+                                  在 GitHub 上查看 (View on GitHub)
+                                </a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <!-- Footer -->
+                      <tr>
+                        <td align="center" style="padding: 16px; border-top: 1px solid #e1e4e8; color: #959da5; font-size: 12px;">
+                          这是一封来自 <b>${{ github.repository }}</b> 项目的自动通知邮件。
+                          <br>
+                          This is an automated notification from the <b>${{ github.repository }}</b> project.
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
