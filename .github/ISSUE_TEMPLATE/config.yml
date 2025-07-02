@@ -1,0 +1,18 @@
+# 是否允许用户创建不使用模板的空白 Issue。建议设置为 false。
+# Whether to allow users to create blank issues without using a template. Recommended to set to false.
+blank_issues_enabled: false
+
+# 在“新建 Issue”页面顶部添加的外部链接。
+# Links to external resources displayed at the top of the "New issue" page.
+contact_links:
+  - name: "💬 提问或讨论 (Question or Discussion)"
+    url: https://github.com/OnismExplorer/blog-react/discussions/new
+    about: |
+      如果您只是想提问、分享想法或发起讨论，请使用 GitHub Discussions。
+      Please use GitHub Discussions for questions, sharing ideas, or starting a discussion.
+
+  - name: "🛡️ 安全漏洞报告 (Security Vulnerability Report)"
+    url: mailto:onism.cn@gmail.com
+    about: |
+      如果您发现了安全漏洞，请通过邮件私下告知我们，请不要创建公开的 Issue。
+      If you discover a security vulnerability, please report it to us privately via email. Please do not create a public issue.

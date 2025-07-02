@@ -1,0 +1,103 @@
+# 表单的元数据
+# Metadata for the form
+name: "🐛 Bug 反馈 (Bug Report)"
+description: "创建一个报告以帮助我们改进 (Create a report to help us improve)"
+title: "[BUG] "
+labels: ["bug", "help needed"]
+assignees:
+  - OnismExplorer
+body:
+  # 一段 Markdown 格式的介绍性文字
+  # A piece of introductory text in Markdown format
+  - type: markdown
+    attributes:
+      value: |
+        感谢你花时间帮助我们改进项目！为了让我们能更快地定位并解决问题，请尽可能详细地填写以下信息。
+        Thanks for taking the time to fill out this bug report! To help us solve the issue faster, please provide as much detail as possible.
+
+  # 一个必填的文本域，用于描述 Bug
+  # A required text field to describe the bug
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: "详细描述 Bug (Detailed Bug Description)"
+      description: "请清晰、简洁地描述你遇到的问题。包括你做了什么、期望的结果以及实际的结果。(A clear and concise description of what the bug is. What did you do? What did you expect to happen? What actually happened?)"
+      placeholder: "例如：当我点击首页的'关于'按钮时，页面跳转到了 404，而我期望它跳转到关于我页面。(For example, when I click on the 'About' button on the homepage, the page jumps to 404, and I expect it to jump to the About Me page)"
+    validations:
+      required: true
+
+  # 一个必填的文本域，用于描述复现步骤
+  # A required text field that describes the steps to reproduce
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: "复现步骤 (Steps to Reproduce)"
+      description: "请提供可以稳定复现此问题的步骤。(Please provide a clear set of steps to reproduce this bug.)"
+      placeholder: |
+        1. 访问网站首页 (Go to the homepage)
+        2. 点击导航栏的 '关于' 链接 (Click on the 'About' link in the navigation bar)
+        3. ...
+    validations:
+      required: true
+
+  # 一个必填的文本域，用于描述运行环境
+  # A required text field that describes the runtime environment
+  - type: textarea
+    id: environment
+    attributes:
+      label: "运行环境 (Environment)"
+      description: "请提供你的运行环境信息，这对于排查问题至关重要。(Please provide your environment details, which are crucial for debugging.)"
+      value: |
+        - **OS**: 
+        - **Browser**: 
+        - **Node.js**: 
+        - **Project Version**:
+      render: markdown
+    validations:
+      required: true
+
+  # 一个非必填的文本框，用于提供复现链接
+  # A non-mandatory text box to provide a link to the recurrence
+  - type: input
+    id: reproduction-link
+    attributes:
+      label: "问题重现链接 (Reproduction Link)"
+      description: "如果你能提供一个在线代码环境 (如 CodeSandbox、StackBlitz) 或一个可访问的代码仓库链接，将极大地帮助我们。(If you can provide an online code environment or a link to a repository, it would help us immensely.)"
+    validations:
+      required: false
+
+  # 一组多选框，用于提交前的检查
+  # A set of multi-check boxes for pre-commit checks
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "检查清单 (Checklist)"
+      description: "在提交前，请确认以下事项。(Before submitting, please confirm the following.)"
+      options:
+        - label: "我已经搜索过现有的 Issues，确认我的问题不是重复的。(I have searched the existing issues and I'm sure this is not a duplicate.)"
+          required: true
+        - label: "我已经认真阅读 README 文档，确认我的问题并未在文档中给出解决方案。(I've read the README documentation carefully and confirmed that my problem doesn't have a solution in the documentation.)"
+          required: true
+        - label: "我已经提供了清晰的复现步骤。(I have provided clear steps to reproduce.)"
+          required: true
+
+  - type: input
+    id: contact-email
+    attributes:
+      label: "联系邮箱 (Contact Email for Notifications)"
+      description: |
+        可选。如果你希望在你的 Issue 收到新回复时通过邮件接收通知，请填写你的邮箱地址。我们会严格保密你的信息。
+        Optional. If you would like to receive email notifications when your issue receives a new reply, please enter your email address here. We will keep your information confidential.
+      placeholder: "user@example.com"
+    validations:
+      required: false
+  - type: input
+    id: contact-email
+    attributes:
+      label: "联系邮箱 (Contact Email for Notifications)"
+      description: |
+        可选。如果你希望在你的 Issue 收到新回复时通过邮件接收通知，请填写你的邮箱地址。我们会严格保密你的信息。
+        Optional. If you would like to receive email notifications when your issue receives a new reply, please enter your email address here. We will keep your information confidential.
+      placeholder: "user@example.com"
+    validations:
+      required: false

@@ -1,0 +1,55 @@
+name: "💡 功能建议 (Feature Request)"
+description: "提出一个新功能的想法 (Suggest an idea for this project)"
+title: "[FEAT] "
+labels: ["enhancement", "suggestion"]
+assignees:
+  - OnismExplorer
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你为项目贡献想法！你的建议对我们非常重要。
+        Thank you for contributing ideas to this project! Your suggestions are very important to us.
+
+  - type: textarea
+    id: related-problem
+    attributes:
+      label: "你的功能建议是否与某个现有问题相关？(Is your feature request related to a problem?)"
+      description: "请描述你遇到的不便之处，这能帮助我们理解新功能的背景。(Please describe the inconvenience you're experiencing. This helps us understand the context of the new feature.)"
+      placeholder: "例如：我总是在 [...] 场景下感到不方便，因为 [...] (e.g., I'm always frustrated when I [...] because [...])"
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired-solution
+    attributes:
+      label: "描述你想要的解决方案 (Describe the solution you'd like)"
+      description: "清晰、简洁地描述你希望实现的功能，以及它如何解决你上面提到的问题。(A clear and concise description of what you want to happen and how it solves the problem.)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "描述你考虑过的替代方案 (Describe alternatives you've considered)"
+      description: "你是否考虑过其他实现方式或替代方案？请简单说明。(A clear and concise description of any alternative solutions or features you've considered.)"
+    validations:
+      required: false
+
+  - type: input
+    id: contact-email
+    attributes:
+      label: "联系邮箱 (Contact Email for Notifications)"
+      description: |
+        可选。如果你希望在你的 Issue 收到新回复时通过邮件接收通知，请填写你的邮箱地址。我们会严格保密你的信息。
+        Optional. If you would like to receive email notifications when your issue receives a new reply, please enter your email address here. We will keep your information confidential.
+      placeholder: "user@example.com"
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "检查清单 (Checklist)"
+      options:
+        - label: "我已经搜索过现有的 Issues，确认我的建议不是重复的。(I have searched the existing issues and I'm sure this is not a duplicate.)"
+          required: true
