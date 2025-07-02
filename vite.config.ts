@@ -10,7 +10,7 @@ export default defineConfig(({ mode })=>{
   const env = loadEnv(mode,process.cwd());
   return {
     server: {
-      port: 8888, // 指定端口号：8888
+      port: 80, // 指定端口号：80
       open: true,
       host:true // 开放外界访问
     },
