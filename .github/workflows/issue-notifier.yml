@@ -26,7 +26,7 @@ jobs:
 
           subject: "【${{ github.repository }}】收到新Issue / New Issue Received"
           to: ${{ secrets.MAIL_ADDRESS }} # 维护者邮箱
-          from: "${{ replace(github.repository, '/', ' - ') }} Notifier <${{ secrets.MAIL_USERNAME }}>"
+          from: "${{ github.repository_owner }} - ${{ github.event.repository.name }} Notifier <${{ secrets.MAIL_USERNAME }}>"
 
           html_body: |
             <!DOCTYPE html>

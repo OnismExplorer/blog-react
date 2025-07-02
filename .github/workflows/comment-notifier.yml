@@ -39,7 +39,7 @@ jobs:
 
           to: ${{ steps.get_email.outputs.email }}
 
-          from: ${{ replace(github.repository, '/', ' - ') }} Notifier <${{ secrets.MAIL_USERNAME }}>
+          from: "${{ github.repository_owner }} - ${{ github.event.repository.name }} Notifier <${{ secrets.MAIL_USERNAME }}>"
 
           html_body: |
             <!DOCTYPE html>
