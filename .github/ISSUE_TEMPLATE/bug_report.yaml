@@ -91,13 +91,3 @@ body:
       placeholder: "user@example.com"
     validations:
       required: false
-  - type: input
-    id: contact-email
-    attributes:
-      label: "联系邮箱 (Contact Email for Notifications)"
-      description: |
-        可选。如果你希望在你的 Issue 收到新回复时通过邮件接收通知，请填写你的邮箱地址。我们会严格保密你的信息。
-        Optional. If you would like to receive email notifications when your issue receives a new reply, please enter your email address here. We will keep your information confidential.
-      placeholder: "user@example.com"
-    validations:
-      required: false
