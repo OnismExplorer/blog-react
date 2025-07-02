@@ -12,7 +12,7 @@ jobs:
       # Convert the issue body from Markdown to HTML
       - name: "🔄 Convert issue body markdown to HTML (将评论从 md 格式转换为 html 格式)"
         id: md_to_html
-        uses: c-hive/md-to-html@v1
+        uses: jaywcjlove/markdown-to-html-cli@main
         with:
           markdown: ${{ github.event.issue.body }}
 
