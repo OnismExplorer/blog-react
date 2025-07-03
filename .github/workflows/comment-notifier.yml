@@ -12,10 +12,8 @@ jobs:
     steps:
       - name: "🔎 Extract author's email from issue body (从Issue内容中提取作者邮箱)"
         id: get_email
-        # 这里的正则表达式需要与你的 issue 模板中“联系邮箱”的标题完全匹配
-        # The regex here needs to exactly match the title of "Contact Email" in your issue template
         run: |
-          email=$(echo "${{ github.event.issue.body }}" | grep -oP '### 联系邮箱 \(Contact Email for Notifications\)[[:space:]]*\K[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
+          email=$(echo "${{ github.event.issue.body }}" | awk '/### 联系邮箱 \(Contact Email for Notifications\)/ {f=1; next} f && !/^\s*$/ {print; f=0}')
           echo "email=$email" >> $GITHUB_OUTPUT
 
       - name: "🔄 Convert comment markdown to HTML (将评论从 md 格式转换为 html 格式)"
@@ -26,7 +24,6 @@ jobs:
           markdown: ${{ github.event.comment.body }}
 
       - name: "✉️ Send notification email to author (发送通知邮件给作者)"
-        # 仅当成功提取到邮箱时才执行此步骤 (Only run if an email was successfully extracted)
         if: steps.get_email.outputs.email
         uses: dawidd6/action-send-mail@v3
         with:
@@ -64,19 +61,16 @@ jobs:
                       <tr>
                         <td style="padding: 24px;">
                           <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.5;">你好 (Hello), <b>${{ github.event.issue.user.login }}</b>!</p>
-
                           <p style="margin: 0 0 24px; font-size: 16px; line-height: 1.5;">
                             你在 <b>${{ github.repository }}</b> 项目中提交的 Issue 收到了来自 <b>${{ github.event.comment.user.login }}</b> 的新回复。
                             <br>
                             Your issue in the <b>${{ github.repository }}</b> project has received a new reply from <b>${{ github.event.comment.user.login }}</b>.
                           </p>
-            
                           <!-- Issue Title -->
                           <div style="padding: 16px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #f6f8fa; margin-bottom: 24px;">
                             <p style="margin: 0; color: #586069; font-size: 14px;">你的 Issue 标题 (Your Issue Title):</p>
                             <h3 style="margin: 4px 0 0; font-size: 18px; font-weight: 600;">${{ github.event.issue.title }}</h3>
                           </div>
-            
                           <!-- New Comment Body -->
                           <div style="margin-bottom: 24px;">
                             <p style="margin: 0 0 12px; color: #586069; font-size: 14px; font-weight: bold;">回复内容 (Reply Content):</p>
@@ -84,7 +78,6 @@ jobs:
                               ${{ steps.md_to_html.outputs.html }}
                             </div>
                           </div>
-            
                           <!-- Call to Action Button -->
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr>
