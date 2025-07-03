@@ -10,6 +10,8 @@
 [![ESLint](https://img.shields.io/badge/ESLint-9.9.0-crimson?logo=eslint&logoColor=red)](https://eslint.org/)
 [![AGPL-3.0 License](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://opensource.org/licenses/AGPL-3.0)
 
+中文 | [English](./README-EN.md)
+
 简介：一个基于 React + Vite + TypeScript 构建，采用 Ant Design 组件库和 Tailwind CSS 样式框架的现代化个人博客系统(博客地址：[onism.cn](https://onism.cn)，欢迎参观，补药攻击我呀 (ToT)/~~~)
 
 ## 🎨写在前面
