@@ -6,15 +6,24 @@ on:
 
 jobs:
   notify-author:
-    # 仅当评论者不是机器人，也不是 Issue 创建者时才运行 (Only run if the commenter is not a bot and not the issue author)
     if: github.event.sender.type != 'Bot' && github.event.comment.user.login != github.event.issue.user.login
     runs-on: ubuntu-latest
     steps:
       - name: "🔎 Extract author's email from issue body (从Issue内容中提取作者邮箱)"
         id: get_email
         run: |
-          email=$(echo "${{ github.event.issue.body }}" | awk '/### 联系邮箱 \(Contact Email for Notifications\)/ {f=1; next} f && !/^\s*$/ {print; f=0}')
+          email=$(echo "${{ github.event.issue.body }}" | awk '/### 联系邮箱 \(Contact Email for Notifications\)/ {f=1; next} f && NF {print; f=0}')
           echo "email=$email" >> $GITHUB_OUTPUT
+
+      # --- 新增的调试步骤 ---
+      - name: "🐞 Debug: Print Issue Body and Extracted Email"
+        run: |
+          echo "--- START: Raw Issue Body from Action ---"
+          echo "${{ github.event.issue.body }}"
+          echo "--- END: Raw Issue Body from Action ---"
+          echo ""
+          echo ">>> Extracted Email: [${{ steps.get_email.outputs.email }}]"
+      # --- 调试步骤结束 ---
 
       - name: "🔄 Convert comment markdown to HTML (将评论从 md 格式转换为 html 格式)"
         if: steps.get_email.outputs.email
@@ -31,13 +40,9 @@ jobs:
           server_port: ${{ secrets.MAIL_PORT }}
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
-
           subject: "【新回复/New Reply】你在 ${{ github.repository }} 项目中的 Issue 有了新回复 / Your issue in the project has a new reply"
-
           to: ${{ steps.get_email.outputs.email }}
-
           from: "${{ github.repository_owner }} - ${{ github.event.repository.name }} Notifier <${{ secrets.MAIL_USERNAME }}>"
-
           html_body: |
             <!DOCTYPE html>
             <html lang="en">
