@@ -6,7 +6,7 @@ on:
 
 jobs:
   notify-author:
-    # if: github.event.sender.type != 'Bot' && github.event.comment.user.login != github.event.issue.user.login
+    if: github.event.sender.type != 'Bot' && github.event.comment.user.login != github.event.issue.user.login
     runs-on: ubuntu-latest
     steps:
       - name: "🔎 Extract author's email from issue body (从Issue内容中提取作者邮箱)"
@@ -14,16 +14,6 @@ jobs:
         run: |
           email=$(echo "${{ github.event.issue.body }}" | awk '/### 联系邮箱 \(Contact Email for Notifications\)/ {f=1; next} f && NF {print; f=0}')
           echo "email=$email" >> $GITHUB_OUTPUT
-
-      # --- 新增的调试步骤 ---
-      - name: "🐞 Debug: Print Issue Body and Extracted Email"
-        run: |
-          echo "--- START: Raw Issue Body from Action ---"
-          echo "${{ github.event.issue.body }}"
-          echo "--- END: Raw Issue Body from Action ---"
-          echo ""
-          echo ">>> Extracted Email: [${{ steps.get_email.outputs.email }}]"
-      # --- 调试步骤结束 ---
 
       - name: "🔄 Convert comment markdown to HTML (将评论从 md 格式转换为 html 格式)"
         if: steps.get_email.outputs.email

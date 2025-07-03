@@ -2,21 +2,51 @@ name: "📧 New Issue Notification (新Issue通知)"
 
 on:
   issues:
-    types: [opened]
+    types: [ opened ]
 
 jobs:
   notify-owner:
     runs-on: ubuntu-latest
     steps:
-      # 将 Issue 正文从 Markdown 转换为 HTML
-      # Convert the issue body from Markdown to HTML
-      - name: "🔄 Convert issue body markdown to HTML (将评论从 md 格式转换为 html 格式)"
+      # 根据 Issue 的标签，设置邮件的主题、颜色和标题等变量
+      # Set email theme, color, title, etc., based on issue labels.
+      - name: "🎨 Set Email Theme based on Issue Labels (根据标签设置邮件主题)"
+        id: theme
+        run: |
+          # 检查是否包含 'bug' 标签
+          # Check for 'bug' label
+          if ${{ contains(github.event.issue.labels.*.name, 'bug') }}; then
+            echo "subject_prefix=[BUG] " >> $GITHUB_OUTPUT
+            echo "theme_color=#d73a49" >> $GITHUB_OUTPUT  # 红色 (Red)
+            echo "icon=🐛" >> $GITHUB_OUTPUT
+            echo "title_text=New Bug Report (新的 Bug 报告)" >> $GITHUB_OUTPUT
+          # 检查是否包含 'enhancement' 标签
+          # Check for 'enhancement' label
+          elif ${{ contains(github.event.issue.labels.*.name, 'enhancement') }}; then
+            echo "subject_prefix=[FEAT] " >> $GITHUB_OUTPUT
+            echo "theme_color=#0366d6" >> $GITHUB_OUTPUT  # 蓝色 (Blue)
+            echo "icon=💡" >> $GITHUB_OUTPUT
+            echo "title_text=New Feature Suggestion (新的功能建议)" >> $GITHUB_OUTPUT
+          # 其他所有情况的默认设置
+          # Default for all other cases
+          else
+            echo "subject_prefix=[ISSUE] " >> $GITHUB_OUTPUT
+            echo "theme_color=#586069" >> $GITHUB_OUTPUT  # 灰色 (Gray)
+            echo "icon=📄" >> $GITHUB_OUTPUT
+            echo "title_text=New Issue Received (收到新的 Issue)" >> $GITHUB_OUTPUT
+          fi
+
+      # 将 Issue 的 Markdown 内容转换为 HTML
+      # Convert the issue's Markdown body to HTML.
+      - name: "🔄 Convert issue body to HTML (将Issue内容转换为HTML)"
         id: md_to_html
         uses: jaywcjlove/markdown-to-html-cli@main
         with:
           markdown: ${{ github.event.issue.body }}
 
-      - name: "✉️ Send beautiful notification email to owner (发送邮件给维护者)"
+      # 使用上面设置的动态变量，发送定制化的邮件
+      # Send a customized email using the dynamic variables set above.
+      - name: "✉️ Send notification email to owner (发送通知邮件给维护者)"
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.MAIL_SERVER }}
@@ -24,10 +54,17 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
 
-          subject: "【${{ github.repository }}】收到新Issue / New Issue Received"
+          # 使用动态生成的主题前缀
+          # Use the dynamically generated subject prefix.
+          subject: "${{ steps.theme.outputs.subject_prefix }}${{ github.event.issue.title }}"
+
+          # ⚠️ 修改为你自己的邮箱地址
+          # ⚠️ Change this to your own email address.
           to: ${{ secrets.MAIL_ADDRESS }} # 维护者邮箱
           from: "${{ github.repository_owner }} - ${{ github.event.repository.name }} Notifier <${{ secrets.MAIL_USERNAME }}>"
 
+          # 使用全新的、支持动态主题和中英双语的 HTML 邮件模板
+          # Use the new HTML email template that supports dynamic themes and is fully bilingual.
           html_body: |
             <!DOCTYPE html>
             <html lang="en">
@@ -41,48 +78,58 @@ jobs:
                 <tr>
                   <td align="center" style="padding: 20px 0;">
                     <table width="600" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #ffffff;">
+                      <!-- 动态颜色的头部 -->
                       <!-- Header -->
                       <tr>
-                        <td align="center" style="padding: 24px; border-bottom: 1px solid #e1e4e8; background-color: #d73a49;">
-                          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">新Issue通知 (New Issue)</h1>
+                        <td align="left" style="padding: 24px; border-bottom: 1px solid #e1e4e8; background-color: ${{ steps.theme.outputs.theme_color }};">
+                          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">
+                            <span style="vertical-align: middle; margin-right: 10px;">${{ steps.theme.outputs.icon }}</span>${{ steps.theme.outputs.title_text }}
+                          </h1>
                         </td>
                       </tr>
+            
+                      <!-- 内容 -->
                       <!-- Content -->
                       <tr>
                         <td style="padding: 24px;">
                           <p style="margin: 0 0 24px; font-size: 16px; line-height: 1.5;">
-                            项目 <b>${{ github.repository }}</b> 收到了由用户 <b>${{ github.event.issue.user.login }}</b> 创建的一个新 Issue。
+                            项目 <b>${{ github.repository }}</b> 收到了来自 <b>${{ github.event.issue.user.login }}</b> 的新提交。
                             <br>
-                            Project <b>${{ github.repository }}</b> has received a new issue from <b>${{ github.event.issue.user.login }}</b>.
+                            The project <b>${{ github.repository }}</b> has received a new submission from <b>${{ github.event.issue.user.login }}</b>.
                           </p>
-
+            
+                          <!-- Issue 标题 -->
                           <!-- Issue Title -->
                           <div style="padding: 16px; border: 1px solid #e1e4e8; border-radius: 6px; background-color: #f6f8fa; margin-bottom: 24px;">
-                            <p style="margin: 0; color: #586069; font-size: 14px;">Issue 标题 (Issue Title):</p>
+                            <p style="margin: 0; color: #586069; font-size: 14px;">标题 (Title):</p>
                             <h3 style="margin: 4px 0 0; font-size: 18px; font-weight: 600;">${{ github.event.issue.title }}</h3>
                           </div>
-
+            
+                          <!-- Issue 内容 -->
                           <!-- Issue Body -->
                           <div style="margin-bottom: 24px;">
-                            <p style="margin: 0 0 12px; color: #586069; font-size: 14px; font-weight: bold;">详细内容 (Full Details):</p>
-                            <div style="padding: 16px; border-left: 4px solid #d73a49; background-color: #f6f8fa; font-size: 14px; line-height: 1.6; color: #24292e;">
+                            <p style="margin: 0 0 12px; color: #586069; font-size: 14px; font-weight: bold;">详细内容 (Details):</p>
+                            <div style="padding: 16px; border-left: 4px solid ${{ steps.theme.outputs.theme_color }}; background-color: #f6f8fa; font-size: 14px; line-height: 1.6; max-height: 400px; overflow-y: auto;">
                               ${{ steps.md_to_html.outputs.html }}
                             </div>
                           </div>
-
+            
+                          <!-- 跳转按钮 -->
                           <!-- Call to Action Button -->
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr>
                               <td align="center">
                                 <a href="${{ github.event.issue.html_url }}"
                                   style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; background-color: #2ea44f; border-radius: 6px;">
-                                  在 GitHub 上查看 (View on GitHub)
+                                  查看 Issue (View Issue on GitHub)
                                 </a>
                               </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
+            
+                      <!-- 页脚 -->
                       <!-- Footer -->
                       <tr>
                         <td align="center" style="padding: 16px; border-top: 1px solid #e1e4e8; color: #959da5; font-size: 12px;">
