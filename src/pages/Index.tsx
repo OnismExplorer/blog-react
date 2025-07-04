@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {page} from "@type/page";
 import {article} from "@type/article";
 import {poetry} from "@type/saying";
@@ -31,119 +31,108 @@ const Index: React.FC = () => {
         pageNumber: 1,
         pageSize: 10,
         total: 0,
-        sortId: -1,
+        sortId: null,
         searchKey: '',
         articleSearch: ''
     })
     const [printerInfo, setPrinterInfo] = useState<string>('');
     const [imgError, setImgError] = useState<boolean>(false);
 
-    useEffect(() => {
-        getPoetry();
-        getArticles();
-    }, []);
-
-    const getPoetry = () => {
+    const getPoetry = useCallback(() => {
         request.get<poetry, ApiResponse<poetry>>(constant.poetry, {}, false, true)
             .then((res) => {
                 const result = res.data;
                 if (!common.isEmpty(result)) {
-                    // 设置打印内容
                     setPrinterInfo(result.content);
                 }
             })
             .catch((error) => console.error('获取诗词失败：', error.message))
-    }
+    }, [request, constant, common]); // 依赖项是稳定的 context 值
 
-    const getArticles = () => {
+    const getArticles = useCallback(() => {
+        // 当 pageNumber > 1 时，我们正在加载更多，不需要重置文章列表
+        if (pagination.pageNumber === 1) {
+            setArticles([]); // 仅在第一页或筛选条件改变时重置
+        }
+
         getArticleList(pagination, 'user')
             .then((res) => {
                 const result = res.data;
                 if (!common.isEmpty(result)) {
                     if (pagination.pageNumber === 1) {
-                        // 第一页时直接设置
                         setArticles(result.records);
                     } else {
-                        // 后续页追加
                         setArticles(prev => [...prev, ...result.records]);
                     }
                     setPagination((prev) => ({
                         ...prev,
                         total: result.totalRow,
-                    }))
+                    }));
                 }
-            })
-    }
+            });
+    }, [pagination, common]); // 依赖于 pagination，当它变化时，函数会更新
 
-    const selectSort = (sort: sort) => {
-        setPagination((prev) => ({
-            ...prev,
-            sortId: sort.id,
-        }))
-
-        // 重置文章列表
-        setArticles([]);
-
-        // 获取文章
-        getArticles();
-
-        // 平滑滚动到文章部分
-        setTimeout(() => {
-            const element = document.querySelector('#recent-posts');
-            element?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-                inline: 'nearest',
-            })
-        }, 100)
-    }
-
-    const selectArticle = (articleSearch: string) => {
-        setPagination((prev) => ({
-            ...prev,
-            sortId: -1,
-            articleSearch: articleSearch
-        }))
-
-        // 重置文章列表
-        setArticles([]);
-
-        // 获取文章
-        getArticles();
-
-        // 平滑滚动到文章部分
-        setTimeout(() => {
-            const element = document.querySelector('#recent-posts');
-            element?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-                inline: 'nearest',
-            })
-        }, 100)
-    }
+    // 初始化获取诗词
+    useEffect(() => {
+        getPoetry();
+    }, [getPoetry]);
 
     useEffect(() => {
         getArticles();
-    }, [pagination.sortId, pagination.pageNumber])
+    }, [pagination.sortId, pagination.pageNumber, pagination.articleSearch]); // 监听具体变化
 
-    // 获取下一页文章列表
-    const getNextArticlesPage = () => {
+    const selectSort = useCallback((sort: sort) => {
         setPagination((prev) => ({
             ...prev,
-            pageNumber: prev.pageNumber + 1,
-        }))
-    }
+            pageNumber: 1, // 切换分类时，应重置到第一页
+            sortId: sort.id,
+            articleSearch: '' // 清除文章搜索
+        }));
+
+        // 平滑滚动到文章部分
+        setTimeout(() => {
+            const element = document.querySelector('#recent-posts');
+            element?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }, 100);
+    }, []);
+
+    const selectArticle = useCallback((articleSearch: string) => {
+        setPagination((prev) => ({
+            ...prev,
+            pageNumber: 1, // 搜索时，应重置到第一页
+            sortId: null, // 清除分类筛选
+            articleSearch: articleSearch
+        }));
+
+        // 平滑滚动到文章部分
+        setTimeout(() => {
+            const element = document.querySelector('#recent-posts');
+            element?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }, 100);
+    }, []);
+
+    // 获取下一页文章列表
+    const getNextArticlesPage = useCallback(() => {
+        // 只有当还有更多文章时才增加页码
+        if (articles.length < pagination.total!) {
+            setPagination((prev) => ({
+                ...prev,
+                pageNumber: prev.pageNumber + 1,
+            }));
+        }
+    }, [articles.length, pagination.total]);
 
     // 跳转指定位置
-    const navigation = (selector: string) => {
+    const navigation = useCallback((selector: string) => {
         const element = document.querySelector(selector)
         if (element) {
             window.scrollTo({
                 top: (element as HTMLElement).offsetTop,
                 behavior: "smooth",
-            })
+            });
         }
-    }
+    }, []);
+
 
     const [imageUrl, setImageUrl] = useState<string>(store.state.webInfo.backgroundImage);
 
@@ -153,10 +142,18 @@ const Index: React.FC = () => {
         }
     }, []);
 
-    const getImageUrl = async () => {
+    const getImageUrl = useCallback(async () => {
         const result = await getRandomResource("cover");
-        setImageUrl(result.data);
-    }
+        if (result.data) {
+            setImageUrl(result.data);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (common.isEmpty(store.state.webInfo.backgroundImage)) {
+            getImageUrl().then();
+        }
+    }, [common, store.state.webInfo.backgroundImage, getImageUrl]);
 
     return (
         <div className="select-none font-custom">
