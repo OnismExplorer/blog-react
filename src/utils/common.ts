@@ -30,7 +30,7 @@ const isEmpty = (value: unknown): boolean => {
  */
 const faceReg = (content: string): string => {
     const qiniuDownload = sessionStorage.getItem("qiniuDownload");
-    const newContent = content.replace(/\[[^[^\]]+]/g, (word) => {
+    return content.replace(/\[[^[^\]]+]/g, (word) => {
         const index = constant.emojiList.indexOf(word.replace("[", "").replace("]", ""));
         if (index > -1) {
             const url = `${qiniuDownload}emoji/q${index + 1}.gif`;
@@ -38,9 +38,6 @@ const faceReg = (content: string): string => {
         }
         return word;
     });
-    sessionStorage.removeItem("qiniuDownload");
-    console.log('清除后下载地址：',sessionStorage.getItem('qiniuDownload'))
-    return newContent;
 };
 
 /**
