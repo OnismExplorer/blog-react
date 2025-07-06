@@ -335,7 +335,7 @@ const MyAside: React.FC<AsideProps> = ({
                 width="100%"
                 footer={null}
                 centered
-                destroyOnHidden
+                destroyOnClose
                 style={{textAlign: "center"}}
                 className="max-w-[95vw] sm:max-w-[500px]"
             >
@@ -411,17 +411,17 @@ const MyAside: React.FC<AsideProps> = ({
                 <div className='flex justify-center items-center my-3 mx-0'>
                     {/*上一首*/}
                     <button onClick={() => {playMusic().then();setCoverDirection('left')}}
-                            className="w-[50px] h-[50px] rounded-[50px] bg-sliderTrack shadow-music-slider border-none my-0 mx-4 active:bg-sliderTrack active:shadow-music-active-button">
+                            className="w-[50px] h-[50px] rounded-full bg-sliderTrack shadow-music-slider border-none my-0 mx-auto active:bg-sliderTrack active:shadow-music-active-button">
                         <Image src={constant.prevMusicImage} draggable={false} zoomable={false} alt={'上一首'}/>
                     </button>
                     {/*播放键*/}
                     <button onClick={togglePlay}
-                            className="w-[50px] h-[50px] rounded-[50px] bg-sliderTrack shadow-music-slider border-none my-0 mx-4 active:bg-sliderTrack active:shadow-music-active-button">
+                            className="w-[50px] h-[50px] rounded-full bg-sliderTrack shadow-music-slider border-none my-0 mx-auto active:bg-sliderTrack active:shadow-music-active-button">
                         <Image src={playButtonImage} alt={"播放/暂停"} draggable={false} zoomable={false}/>
                     </button>
                     {/*下一首*/}
                     <button onClick={() => {playMusic().then();setCoverDirection('right')}}
-                            className="w-[50px] h-[50px] rounded-[50px] bg-sliderTrack shadow-music-slider border-none my-0 mx-4 active:bg-sliderTrack active:shadow-music-active-button">
+                            className="w-[50px] h-[50px] rounded-full bg-sliderTrack shadow-music-slider border-none mx-auto active:bg-sliderTrack active:shadow-music-active-button">
                         <Image src={constant.nextMusicImage} alt={"下一首"} draggable={false} zoomable={false}/>
                     </button>
                 </div>
