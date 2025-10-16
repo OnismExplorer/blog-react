@@ -93,8 +93,8 @@ const Travel: React.FC = () => {
     }
 
     return (
-        <div>
-            <div className="px-6 py-4 bg-favoriteBg">
+        <div className="min-h-screen flex flex-col bg-favoriteBg">
+            <div className="flex-1 px-6 py-4">
                 {/* 封面 */}
                 <div
                     className="relative mx-auto mt-[60px] mb-[30px] h-[550px] overflow-hidden rounded-[20px] max-w-[1350px] text-white select-none animate-slide-top">
@@ -160,9 +160,7 @@ const Travel: React.FC = () => {
             </div>
 
             {/* 页脚 */}
-            <div className="bg-favoriteBg">
-                <Footer/>
-            </div>
+            <Footer/>
         </div>
     );
 }

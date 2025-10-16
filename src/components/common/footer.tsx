@@ -32,9 +32,9 @@ const Footer: React.FC<FooterProps> = ({ showFooter = true ,footerText = "失之
     if (!showFooter) return null; // 如果 showFooter 为 false，则不渲染组件
 
     return (
-        <div className="select-none animate-hideToShow duration-2000">
+        <footer className="w-full mt-auto select-none animate-hideToShow duration-2000">
             <div
-                className="rounded-t-[1.5rem] bg-gradient-to-r from-[#ee7752] via-[#e73c7e] to-[#23a6d5] text-center text-white bg-[length:300%_300%] animate-gradientBG duration-[10s] ease-in-out infinite">
+                className="w-full rounded-t-[1.5rem] bg-gradient-to-r from-[#ee7752] via-[#e73c7e] to-[#23a6d5] text-center text-white bg-[length:300%_300%] animate-gradientBG duration-[10s] ease-in-out infinite">
                 <div className="font-comic font-bold pt-2 pb-1 text-[18px] select-none">
                     {footerText}
                     <br/>
@@ -48,7 +48,7 @@ const Footer: React.FC<FooterProps> = ({ showFooter = true ,footerText = "失之
                         className="text-[#595A5A] no-underline transition-all duration-300 hover:text-orange-500">{year} {store.state.webInfo.webName}</a>
                 </div>
             </div>
-        </div>
+        </footer>
     );
 };
 
