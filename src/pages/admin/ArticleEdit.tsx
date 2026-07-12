@@ -318,20 +318,20 @@ const ArticleEdit: React.FC = () => {
 
                 <Form.Item
                     label="封面"
-                    name="articleCover"
-                    rules={[{required: true, message: '请选择封面'}]}
                 >
                     <div className="space-y-3">
                         <div className="flex items-center space-x-3">
-                            <Input
-                                value={article.articleCover}
+                            <Form.Item name="articleCover" rules={[{required: true, message: '请选择封面'}]} noStyle>
+                                <Input
+                                    value={article.articleCover}
                                 onChange={(e) => {
                                     setArticle(prev => ({...prev, articleCover: e.target.value}));
                                     articleForm.setFieldValue('articleCover', e.target.value);
                                 }}
                                 placeholder="封面图片URL"
-                                className="flex-1"
-                            />
+                                    className="flex-1"
+                                />
+                            </Form.Item>
                             {article.articleCover && (
                                 <Image
                                     width={40}
