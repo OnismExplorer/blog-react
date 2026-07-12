@@ -20,9 +20,9 @@ const getFamilyList = async (param: page): Promise<CommonResponseResult<BaseRequ
 /**
   * 修改家庭状态
   */
-const changeFamilyStatus = async (id:number | null,status:boolean): Promise<CommonResponseResult<string>> => {
+const changeFamilyStatus = async (id:number | null,status:boolean): Promise<CommonResponseResult<family>> => {
     try {
-        const response = await request.get<string>('/family/changeLoveStatus',{id:id,status:status},true);
+        const response = await request.get<family>('/family/changeLoveStatus',{id:id,status:status},true);
         return response.data;
     } catch (error) {
         throw ApiError.handleError(error);

@@ -61,8 +61,13 @@ const LoveList: React.FC = () => {
 
     const changeStatus = (id: number | null, status: boolean) => {
         changeFamilyStatus(id, status)
-            .then(() => {
+            .then((res) => {
+                const updated = res.data;
+                setFamilies((previous) => previous.map((item) =>
+                    item.id === id ? {...item, ...updated, status: updated.status ?? status} : item,
+                ));
                 message.success('修改成功！').then();
+                getFamilies();
             })
     }
 
