@@ -326,7 +326,7 @@ const Home: React.FC = () => {
                             placement='bottom'
                             trigger={['hover']}
                             menu={{
-                                items: userMenuItems,
+                                items: userMenuItems as AntMenuProps['items'],
                                 onClick: handleMenuClick
                             }}
                         >

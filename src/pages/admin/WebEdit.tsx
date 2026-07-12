@@ -64,7 +64,7 @@ const WebEdit: React.FC = () => {
 
     const handleSubmit = () => {
         webForm.validateFields().then((values) => {
-            const payload = {...values, ...webInfo};
+            const payload = {...webInfo, ...values};
             handleUpdate(payload)
         })
             .catch(() => {

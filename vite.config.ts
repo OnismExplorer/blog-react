@@ -12,7 +12,13 @@ export default defineConfig(({ mode })=>{
     server: {
       port: 80, // 指定端口号：80
       open: true,
-      host:true // 开放外界访问
+      host:true, // 开放外界访问
+      proxy: {
+        '/uploads': {
+          target: env.VITE_BASE_URL || 'http://localhost:8081',
+          changeOrigin: true,
+        },
+      },
     },
     ssr: {
       noExternal: ['rehype-mermaid']
