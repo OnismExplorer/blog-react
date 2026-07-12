@@ -3,8 +3,6 @@ import {message} from "antd";
 import classNames from "classnames";
 import "tailwindcss/tailwind.css";
 import  {useStore} from "@hooks/useStore";
-import {ApiResponse} from "@utils/request";
-import {getDownloadUrl} from "@api/resource";
 import ProButton from "../common/proButton";
 import {useAppContext} from "@hooks/useAppContext";
 
@@ -14,8 +12,8 @@ type GraffitiProps = {
 };
 
 const Graffiti: React.FC<GraffitiProps> = ({showComment, addGraffitiComment}) => {
-    const {state} = useStore(); // 获取状态
-    const {common,constant,request} = useAppContext();
+    const {state} = useStore();
+    const {common, constant, request} = useAppContext();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [canvasMoveUse, setCanvasMoveUse] = useState(false);
@@ -27,7 +25,6 @@ const Graffiti: React.FC<GraffitiProps> = ({showComment, addGraffitiComment}) =>
         lineColor: "#8154A3",
         shadowBlur: 2,
     });
-    const [qiniuDownload,setQiniuDownload] = useState<string>();
     const colors = ["#8154A3", "#fef4ac", "#0018ba", "#ffc200", "#f32f15", "#cccccc", "#5ab639"];
     const brushSize = [
         {className: "text-sm", lineWidth: 5},
@@ -55,10 +52,6 @@ const Graffiti: React.FC<GraffitiProps> = ({showComment, addGraffitiComment}) =>
 
     // 初始化
     useEffect(() => {
-        getDownloadUrl()
-            .then((res) => {
-                setQiniuDownload(res);
-            })
         const canvas = canvasRef.current;
         if (canvas) {
             const context = canvas.getContext("2d", {willReadFrequently: true});
@@ -187,49 +180,16 @@ const Graffiti: React.FC<GraffitiProps> = ({showComment, addGraffitiComment}) =>
         }
         const blob = new Blob([u8arr], {type: mimeType});
         const key = `graffiti/${state.currentUser.username?.replace(/[^a-zA-Z]/g, '')}${state.currentUser.id}${Date.now()}${Math.floor(Math.random() * 1000)}.png`;
-        const fd = new FormData();
-        fd.append("file", blob);
-        fd.append("key", key);
-
         try {
-            request.get<string>(import.meta.env.VITE_BASE_URL + "/qiniu/getUpToken", {key: key})
-                .then((res) => {
-                    if (common.isEmpty(res.data)) {
-                        fd.append("token", res.data.data);
-
-                        request.uploadQiniu<unknown,ApiResponse<{hash:string,key:string}>>(constant.qiniuUrl, fd)
-                            .then((res) => {
-                                if (common.isEmpty(res.data.key)) {
-                                    clearContext();
-                                    const url = qiniuDownload + res.data.key;
-                                    common.saveResource("graffiti", url, blob.size, blob.type);
-                                    const img = "<你画我猜," + url + ">";
-                                    addGraffitiComment(img);
-                                }
-                            })
-                            .catch((error: unknown) => {
-                                clearContext();
-                                if (error instanceof Error) {
-                                     message.error(error.message);
-                                    return;
-                                } else {
-                                    message.error("发生未知错误");
-                                    return;
-                                }
-                            });
-                    }
-                })
-                .catch((error: unknown) => {
-                    clearContext();
-                    if (error instanceof Error) {
-                        message.error(error.message);
-                        return;
-                    } else {
-                        message.error("发生未知错误");
-                        return;
-                    }
-                });
+            const uploadRes = await request.post<{ key: string; url: string; size: number; mimeType?: string }>(
+                "/qiniu/uploadBase64",
+                {key, base64: base64Data, mimeType},
+            );
             clearContext();
+            const url = uploadRes.data.data.url;
+            common.saveResource("graffiti", url, blob.size, blob.type);
+            const img = "<????," + url + ">";
+            addGraffitiComment(img);
         } catch (error: unknown) {
             clearContext();
             if (error instanceof Error) {

@@ -12,7 +12,6 @@ const constants = {
     tocbot: "https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js",
     poetry: "https://v1.jinrishici.com/all.json",
 
-    qiniuUrl: "https://up-z2.qiniup.com",
 
     // 收藏页视频
     favoriteVideo: "src/assets/video/favoriteVideo.mp4",

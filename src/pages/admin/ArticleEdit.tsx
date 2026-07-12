@@ -10,7 +10,6 @@ import {useStore} from "@hooks/useStore";
 import {article} from "@type/article";
 import {label} from "@type/label";
 import {sort} from "@type/sort";
-import {ApiResponse} from "@utils/request";
 import MarkdownEditor from "@components/code/MarkdownEditor";
 import {getDownloadUrl} from "@api/resource";
 
@@ -19,7 +18,7 @@ const ArticleEdit: React.FC = () => {
 
     // 获取文章 id
     const id = new URLSearchParams(location.search).get("id");
-    const {common, constant, request} = useAppContext();
+    const {common, request} = useAppContext();
     const store = useStore();
     const [article, setArticle] = useState<article>({
         articleTitle: '',
@@ -86,15 +85,23 @@ const ArticleEdit: React.FC = () => {
                 const result = res.data;
                 if (!common.isEmpty(result)) {
                     setArticle(result);
+                    articleForm.setFieldsValue(result);
                 }
             })
     }
+
+    const fileToBase64 = (file: File) => new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
 
     const handleImageUpload = async (image: string | File): Promise<string> => {
         // 若传入的是 url，则先解析并将其转换为 file
         if (typeof image === 'string') {
             // 若是本域名图片，则直接返回
-            if (image.includes(qiniuDownload)) {
+            if (qiniuDownload && image.includes(qiniuDownload)) {
                 return image;
             }
 
@@ -114,25 +121,13 @@ const ArticleEdit: React.FC = () => {
             suffix = file.name.substring(file.name.lastIndexOf('.'));
         }
         const key = "articlePicture" + "/" + store.state.currentAdmin.username?.replace(/[^a-zA-Z]/g, '') + store.state.currentAdmin.id + new Date().getTime() + Math.floor(Math.random() * 1000) + suffix;
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("key", key);
-
-        const tokenRes = await request.get<string>('/qiniu/getUpToken', {key: key}, true);
-        const result = tokenRes.data;
-        if (common.isEmpty(result)) {
-            throw new Error('获取上传 Token 失败！');
-        }
-        fd.append("token", result.data);
-        const uploadRes = await request.uploadQiniu<unknown, ApiResponse<{
-            hash: string,
-            key: string
-        }>>(constant.qiniuUrl, fd)
-        if (common.isEmpty(uploadRes.data.key)) {
-            throw new Error('上传图片失败！');
-        }
-
-        const url = qiniuDownload + uploadRes.data.key;
+        const base64 = await fileToBase64(file);
+        const uploadRes = await request.post<{ key: string; url: string; size: number; mimeType?: string }>(
+            "/qiniu/uploadBase64",
+            {key, base64, mimeType: file.type},
+            true
+        );
+        const url = uploadRes.data.data.url;
         // 保存资源
         common.saveResource('articlePicture', url, file.size, file.type, true);
 
@@ -152,7 +147,12 @@ const ArticleEdit: React.FC = () => {
         }
 
         articleForm.validateFields().then((values) => {
-            const payload = {...values, ...article, id: common.parseNumber(id)};
+            const payload = {...article, ...values};
+            if (!common.isEmpty(id)) {
+                payload.id = common.parseNumber(id);
+            } else {
+                delete payload.id;
+            }
             handleSaveArticle(payload)
         })
             .catch(() => {

@@ -1,11 +1,11 @@
-import React, {useEffect} from "react"
+import React from "react"
 import {useState, useRef, type ChangeEvent} from "react"
 import {X} from "lucide-react"
 import {message} from "antd";
 import {useAppContext} from "@hooks/useAppContext";
 import {AxiosResponse} from "axios";
 import {useStore} from "@hooks/useStore";
-import {getDownloadUrl} from "@api/resource";
+import request from "@utils/request";
 
 /**
  * 上传图片组件
@@ -61,16 +61,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     // 是否点击上传
     const [isClick, setIsClick] = useState<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const {common, constant} = useAppContext();
+    const {common} = useAppContext();
     const {state} = useStore();
-    const [qiniuDownload,setQiniuDownload] = useState<string>();
-
-    useEffect(() => {
-        getDownloadUrl()
-            .then((res) => {
-                setQiniuDownload(res);
-            })
-    }, []);
 
     const handleClick = async () => {
         if (beforeExecute) {
@@ -175,70 +167,67 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 } : item)),
             )
 
-            // 获取上传 token
-            const tokenResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/qiniu/getUpToken?key=${key}`, {
-                headers: {
-                    Authorization: isAdmin ? localStorage.getItem("adminToken") || "" : localStorage.getItem("userToken") || "",
-                },
-            })
+            const response = await uploadChunkedFile(file, key)
+            const url = response.url
 
-            const tokenData = await tokenResponse.json()
+            setFileList((prev) =>
+                prev.map((item) => (item.uid === file.uid ? {
+                    ...item,
+                    status: "success" as const,
+                    percent: 100,
+                    url
+                } : item)),
+            )
 
-            if (tokenData.code !== 200) {
-                return Promise.reject(tokenData.message || "获取上传凭证失败")
+            common.saveResource(prefix, url, file.size, file.raw.type, isAdmin)
+            if (onUpload) {
+                onUpload(url)
             }
-
-            // Create form data for upload
-            const formData = new FormData()
-            formData.append("token", tokenData.data)
-            formData.append("key", key)
-            formData.append("file", file.raw)
-
-            // Upload file to Qiniu
-            const xhr = new XMLHttpRequest()
-            xhr.open("POST", constant.qiniuUrl)
-
-            xhr.upload.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100)
-                    setFileList((prev) => prev.map((item) => (item.uid === file.uid ? {...item, percent} : item)))
-                }
-            }
-
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    const response = JSON.parse(xhr.responseText)
-                    const url = `${qiniuDownload}${response.key}`
-
-                    // Update file status to success
-                    setFileList((prev) =>
-                        prev.map((item) => (item.uid === file.uid ? {
-                            ...item,
-                            status: "success" as const,
-                            url,
-                            response
-                        } : item)),
-                    )
-
-                    // 保存资源
-                    common.saveResource(prefix, url, file.size, file.raw.type, isAdmin)
-                    if (onUpload) {
-                        onUpload(url)
-                    }
-                } else {
-                    handleUploadError(file.uid, "上传失败")
-                }
-            }
-
-            xhr.onerror = () => {
-                handleUploadError(file.uid, "网络异常")
-            }
-
-            xhr.send(formData)
         } catch (error) {
             handleUploadError(file.uid, error instanceof Error ? error.message : "上传失败")
         }
     }
+
+    const CHUNK_SIZE = 1024 * 1024
+
+    const uploadChunkedFile = async (file: FileItem, key: string) => {
+        const totalChunks = Math.max(1, Math.ceil(file.raw.size / CHUNK_SIZE))
+        const initRes = await request.post<{ uploadId: string; uploadedChunks: number[] }>(
+            "/upload/init",
+            {key, size: file.raw.size, totalChunks, mimeType: file.raw.type},
+            isAdmin
+        )
+        const uploadId = initRes.data.data.uploadId
+        const uploaded = new Set(initRes.data.data.uploadedChunks)
+
+        for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            if (!uploaded.has(chunkIndex)) {
+                const chunk = file.raw.slice(chunkIndex * CHUNK_SIZE, Math.min(file.raw.size, (chunkIndex + 1) * CHUNK_SIZE))
+                const base64 = await blobToBase64(chunk)
+                await request.post(
+                    "/upload/chunk",
+                    {uploadId, key, chunkIndex, totalChunks, base64},
+                    isAdmin
+                )
+            }
+            const percent = Math.round(((chunkIndex + 1) / totalChunks) * 100)
+            setFileList((prev) => prev.map((item) => (item.uid === file.uid ? {...item, percent} : item)))
+        }
+
+        const completeRes = await request.post<{ key: string; url: string; size: number; mimeType?: string }>(
+            "/upload/complete",
+            {uploadId, key, totalChunks, mimeType: file.raw.type},
+            isAdmin
+        )
+        return completeRes.data.data
+    }
+
+    const blobToBase64 = (blob: Blob) => new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "")
+        reader.onerror = () => reject(reader.error)
+        reader.readAsDataURL(blob)
+    })
 
     const handleUploadError = (uid: string, errorMessage: string) => {
         setFileList((prev) =>

@@ -210,28 +210,10 @@ const upload = async <T = unknown, R = ApiResponse<CommonResponseResult<T>>>(
 };
 
 // 七牛云上传
-const uploadQiniu = async <T = unknown, R = ApiResponse<CommonResponseResult<T>>>(url: string, param: FormData): Promise<R> => {
-    const config: AxiosRequestConfig = {
-        headers: {"Content-Type": "multipart/form-data"},
-        timeout: 60000
-    };
-    try {
-        return await axios.post<T, R>(
-            url,
-            param,
-            config
-        );
-    } catch (err) {
-        return Promise.reject(err);
-    }
-};
-
-// 导出统一接口
 const request = {
     post,
     get,
-    upload,
-    uploadQiniu
+    upload
 };
 
 export default request;
