@@ -358,7 +358,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
             )}
 
             <div className="text-center mt-5">
-                <button onClick={submitUpload}
+                <button
+                    type="button"
+                    onClick={(event) => {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        submitUpload()
+                    }}
                         className="py-2 px-5 rounded-md bg-lightGreen hover:bg-themeBackground text-white">
                     上传
                 </button>
